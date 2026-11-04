@@ -775,8 +775,17 @@ int W_MergeDump (const char *file)
     // [crispy] write WAD header
     fseek(fp, 0, SEEK_SET);
     fwrite("IWAD", 1, 4, fp);
+#ifdef __amigaos__
+    // Big-endian: write the swapped count, but return the lump count itself
+    // (the caller prints it).
+    {
+	uint32_t numlumps_le = LONG(i);
+	fwrite(&numlumps_le, 4, 1, fp);
+    }
+#else
     i = LONG(i);
     fwrite(&i, 4, 1, fp);
+#endif
     fwrite(&dir_p, 4, 1, fp);
 
     fclose(fp);

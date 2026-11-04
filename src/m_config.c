@@ -3205,6 +3205,19 @@ float M_GetFloatVariable(const char *name)
     return *variable->location.f;
 }
 
+#ifdef __amigaos__
+// On an Amiga everything the game writes (configuration, saves, music packs,
+// autoload) goes in a User drawer beside the program, made on first run:
+// SDL's preference path would be ENVARC:, which is copied into RAM at every
+// boot. The caller frees the result with SDL_free, as SDL's.
+static char *PrefPath(void)
+{
+    return SDL_strdup("PROGDIR:User/");
+}
+#else
+#define PrefPath() SDL_GetPrefPath("", PACKAGE_TARNAME)
+#endif
+
 // Get the path to the default configuration dir to use, if NULL
 // is passed to M_SetConfigDir.
 
@@ -3220,7 +3233,7 @@ static char *GetDefaultConfigDir(void)
     char *result;
     char *copy;
 
-    result = SDL_GetPrefPath("", PACKAGE_TARNAME);
+    result = PrefPath();
     if (result != NULL)
     {
         copy = M_StringDuplicate(result);
@@ -3282,7 +3295,7 @@ void M_SetMusicPackDir(void)
         return;
     }
 
-    prefdir = SDL_GetPrefPath("", PACKAGE_TARNAME);
+    prefdir = PrefPath();
     if (prefdir == NULL)
     {
         printf("M_SetMusicPackDir: SDL_GetPrefPath failed, music pack directory not set\n");
@@ -3383,7 +3396,7 @@ char *M_GetAutoloadDir(const char *iwadname, boolean makedir)
     if (autoload_path == NULL || strlen(autoload_path) == 0)
     {
         char *prefdir;
-        prefdir = SDL_GetPrefPath("", PACKAGE_TARNAME);
+        prefdir = PrefPath();
         if (prefdir == NULL)
         {
             printf("M_GetAutoloadDir: SDL_GetPrefPath failed\n");

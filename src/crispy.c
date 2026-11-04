@@ -25,14 +25,24 @@ static crispy_t crispy_s = {
 	0,
 	.extautomap = 1,
 	.gamma = 9,  // default level is "OFF" for intermediate gamma levels
+#ifdef __amigaos__
+	// [crispy] Amiga: start at the original 320x200 (a 68040 draws four
+	// times the pixels at 640x400); the Crispness menu turns hires on.
+	.hires = 0,
+#else
 	.hires = 1,
+#endif
 	.soundfix = 1,
 #ifdef CRISPY_TRUECOLOR
 	.smoothlight = 1,
 	.truecolor = 1,
 #endif
 	.vsync = 1,
+#ifdef __amigaos__
+	.widescreen = 0, // Amiga: 4:3, as a 640x480 RTG screen
+#else
 	.widescreen = 1, // match screen by default
+#endif
 };
 crispy_t *const crispy = &crispy_s;
 

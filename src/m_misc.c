@@ -123,6 +123,60 @@ wchar_t *M_ConvertUtf8ToWide(const char *str)
 }
 #endif
 
+#ifdef __amigaos__
+// AmigaDOS paths: Chocolate Doom joins names with '/', as on Unix, but on
+// an Amiga "./name" is not the current directory, "Vol:/name" and "a//b"
+// mean the parent directory, and "dir/" may not be a directory's name.
+// Every file the game opens goes through the wrappers below, which pass
+// the name through here: "./" and "/./" go, "." is the current directory
+// (""), a '/' after a ':' or another '/' goes, and so does a last '/'.
+// The result is newly allocated.
+
+char *M_AmigaPath(const char *path)
+{
+    char *result = M_StringDuplicate(path);
+    char *in = result, *out = result;
+    size_t len;
+
+    while (in[0] == '.' && in[1] == '/')
+    {
+        in += 2;
+    }
+
+    if (in[0] == '.' && in[1] == '\0')
+    {
+        in++;
+    }
+
+    while (*in != '\0')
+    {
+        if (in[0] == '/' && in[1] == '.' && (in[2] == '/' || in[2] == '\0'))
+        {
+            in += 2;
+            continue;
+        }
+
+        if (in[0] == '/' && out > result && (out[-1] == ':' || out[-1] == '/'))
+        {
+            in++;
+            continue;
+        }
+
+        *out++ = *in++;
+    }
+
+    *out = '\0';
+    len = strlen(result);
+
+    if (len > 1 && result[len - 1] == '/' && result[len - 2] != ':')
+    {
+        result[len - 1] = '\0';
+    }
+
+    return result;
+}
+#endif
+
 FILE *M_fopen(const char *filename, const char *mode)
 {
 #ifdef _WIN32
@@ -151,6 +205,14 @@ FILE *M_fopen(const char *filename, const char *mode)
     free(wmode);
 
     return file;
+#elif defined(__amigaos__)
+    FILE *file;
+    char *name = M_AmigaPath(filename);
+
+    file = fopen(name, mode);
+    free(name);
+
+    return file;
 #else
     return fopen(filename, mode);
 #endif
@@ -172,6 +234,14 @@ int M_remove(const char *path)
     ret = _wremove(wpath);
 
     free(wpath);
+
+    return ret;
+#elif defined(__amigaos__)
+    int ret;
+    char *name = M_AmigaPath(path);
+
+    ret = remove(name);
+    free(name);
 
     return ret;
 #else
@@ -207,6 +277,16 @@ int M_rename(const char *oldname, const char *newname)
     free(wnew);
 
     return ret;
+#elif defined(__amigaos__)
+    int ret;
+    char *from = M_AmigaPath(oldname);
+    char *to = M_AmigaPath(newname);
+
+    ret = rename(from, to);
+    free(from);
+    free(to);
+
+    return ret;
 #else
     return rename(oldname, newname);
 #endif
@@ -235,6 +315,14 @@ int M_stat(const char *path, struct stat *buf)
     buf->st_mtime = wbuf.st_mtime; // [crispy]
 
     free(wpath);
+
+    return ret;
+#elif defined(__amigaos__)
+    int ret;
+    char *name = M_AmigaPath(path);
+
+    ret = stat(name, buf);
+    free(name);
 
     return ret;
 #else
@@ -317,6 +405,11 @@ void M_MakeDirectory(const char *path)
     _wmkdir(wdir);
 
     free(wdir);
+#elif defined(__amigaos__)
+    char *name = M_AmigaPath(path);
+
+    mkdir(name, 0755);
+    free(name);
 #else
     mkdir(path, 0755);
 #endif
@@ -516,7 +609,11 @@ char *M_TempFile(const char *s)
 
     if (tempdir == NULL)
     {
+#ifdef __amigaos__
+        tempdir = "T:";
+#else
         tempdir = "/tmp";
+#endif
     }
 #endif
 
@@ -545,6 +642,15 @@ char *M_DirName(const char *path)
     pb = strrchr(path, '\\');
 #else
     pb = NULL;
+#endif
+#ifdef __amigaos__
+    // "Games:chocolate-doom" is in "Games:"
+    if (pf == NULL && (pb = strrchr(path, ':')) != NULL)
+    {
+        result = M_StringDuplicate(path);
+        result[pb - path + 1] = '\0';
+        return result;
+    }
 #endif
     if (pf == NULL && pb == NULL)
     {

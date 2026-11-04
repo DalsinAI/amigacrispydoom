@@ -140,7 +140,12 @@ typedef int64_t dpixel_t;
 
 #define DIR_SEPARATOR '/'
 #define DIR_SEPARATOR_S "/"
+#ifdef __amigaos__
+// ':' ends an AmigaDOS volume or assign name ("Work:WADs").
+#define PATH_SEPARATOR ';'
+#else
 #define PATH_SEPARATOR ':'
+#endif
 
 #endif
 

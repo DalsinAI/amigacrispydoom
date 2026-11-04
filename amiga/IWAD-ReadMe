@@ -1,0 +1,26 @@
+Crispy Doom needs a Doom IWAD
+=============================
+
+No game data comes with Crispy Doom. Copy an IWAD into this drawer (beside
+the crispy-doom program), and Crispy Doom finds it by itself:
+
+  doom1.wad      Doom shareware (Episode 1, free to download)
+  doom.wad       The Ultimate Doom or registered Doom
+  doom2.wad      Doom II
+  tnt.wad, plutonia.wad   Final Doom
+  freedoom1.wad, freedoom2.wad   Freedoom (free, https://freedoom.github.io)
+
+Upper or lower case doesn't matter. Or start it from a Shell with -iwad and
+the file's full name, for example:
+
+  crispy-doom -iwad Work:WADs/DOOM2.WAD
+
+An IWAD elsewhere is also found through SetEnv DOOMWADDIR (one directory)
+or DOOMWADPATH (several, separated by ';').
+
+PWADs: crispy-doom -file Work:WADs/mymap.wad (Shell), or an ARGS tool type
+on the program's icon, e.g. ARGS=-file mymap.wad -warp 1
+
+Configuration and saved games are written to the User drawer beside the
+program (made on the first run); screenshots to the current
+directory.

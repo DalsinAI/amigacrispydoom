@@ -216,21 +216,40 @@ int key_menu_reloadlevel = 0; // [crispy]
 // Joystick controls
 //
 
+#ifdef __amigaos__
+// A pad in SDL's game controller layout, as GFOpenInput gives a CD32 pad:
+// A (Red, a joystick's fire) fires, B (Blue, a joystick's second button)
+// uses, X (Green) runs, Y (Yellow) strafes, Start (Play) opens the menu,
+// the shoulders (Reverse, Forward) change weapon, Back the automap.
+int joybfire = 0;
+int joybstrafe = 3;
+int joybuse = 1;
+int joybspeed = 2;
+#else
 int joybfire = 0;
 int joybstrafe = 1;
 int joybuse = 3;
 int joybspeed = 2;
+#endif
 
 int joybstrafeleft = -1;
 int joybstraferight = -1;
 
 int joybjump = -1;
 
+#ifdef __amigaos__
+int joybprevweapon = 9;
+int joybnextweapon = 10;
+
+int joybmenu = 6;
+int joybautomap = 4;
+#else
 int joybprevweapon = -1;
 int joybnextweapon = -1;
 
 int joybmenu = -1;
 int joybautomap = -1;
+#endif
 
 int joybuseartifact = -1;
 int joybinvleft = -1;
