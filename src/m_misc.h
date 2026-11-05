@@ -32,6 +32,9 @@ char *M_ConvertWideToUtf8(const wchar_t *wstr);
 #endif
 
 FILE *M_fopen(const char *filename, const char *mode);
+#ifdef __amigaos__
+char *M_AmigaPath(const char *path);
+#endif
 int M_remove(const char *path);
 int M_rename(const char *oldname, const char *newname);
 int M_stat(const char *path, struct stat *buf);

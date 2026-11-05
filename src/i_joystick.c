@@ -40,10 +40,22 @@ static SDL_Joystick *joystick = NULL;
 
 // Standard default.cfg Joystick enable/disable
 
+#ifdef __amigaos__
+// On an Amiga the game reads a pad or joystick from the start, through
+// SDL's game controller API: GFOpenInput lists every controller (the
+// joystick port's stick, a CD32 pad, USB pads) in SDL's game controller
+// layout. With no pad saved the first one found is used.
+static int usejoystick = 1;
+#else
 static int usejoystick = 0;
+#endif
 
 // Use SDL_gamecontroller interface for the selected device
+#ifdef __amigaos__
+static int use_gamepad = 1;
+#else
 static int use_gamepad = 0;
+#endif
 
 // SDL_GameControllerType of gamepad
 static int gamepad_type = 0;
@@ -208,10 +220,15 @@ void I_InitGamepad(void)
     joystick_index = index;
     gamepad_type = SDL_GameControllerTypeForIndex(index);
 
+#ifdef __amigaos__
+    // A new buffer always: with no pad saved joystick_guid is the constant "".
+    joystick_guid = malloc(GUID_STRING_BUF_SIZE);
+#else
     if (strcmp(joystick_guid, ""))
     {
         joystick_guid = malloc(GUID_STRING_BUF_SIZE);
     }
+#endif
 
     guid = SDL_JoystickGetDeviceGUID(joystick_index);
     SDL_JoystickGetGUIDString(guid, joystick_guid, GUID_STRING_BUF_SIZE);
@@ -516,7 +533,12 @@ void I_InitJoystick(void)
 {
     int index;
 
+#ifdef __amigaos__
+    // No pad saved: a game controller still opens (the first one found).
+    if (!usejoystick || (!use_gamepad && !strcmp(joystick_guid, "")))
+#else
     if (!usejoystick || !strcmp(joystick_guid, ""))
+#endif
     {
         return;
     }

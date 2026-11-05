@@ -548,9 +548,15 @@ char *exedir = NULL;
 
 void M_SetExeDir(void)
 {
+#ifdef __amigaos__
+    // The program's own drawer, however it was started (Shell, path or
+    // Workbench icon).
+    exedir = M_StringDuplicate("PROGDIR:");
+#else
     char *dirname;
 
     dirname = M_DirName(myargv[0]);
     exedir = M_StringJoin(dirname, DIR_SEPARATOR_S, NULL);
     free(dirname);
+#endif
 }

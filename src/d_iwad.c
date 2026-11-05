@@ -678,7 +678,7 @@ static void AddIWADPath(const char *path, const char *suffix)
     free(dup_path);
 }
 
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__amigaos__)
 // Add standard directories where IWADs are located on Unix systems.
 // To respect the freedesktop.org specification we support overriding
 // using standard environment variables. See the XDG Base Directory
@@ -778,7 +778,7 @@ static void AddSteamDirs(void)
     free(steampath);
 }
 #endif // __MACOSX__
-#endif // !_WIN32
+#endif // !_WIN32 && !__amigaos__
 
 //
 // Build a list of IWAD files
@@ -798,7 +798,11 @@ static void BuildIWADDirList(void)
 
     // Next check the directory where the executable is located. This might
     // be different from the current directory.
+#ifdef __amigaos__
+    AddIWADDir(M_StringDuplicate("PROGDIR:"));
+#else
     AddIWADDir(M_DirName(myargv[0]));
+#endif
 
     // Add DOOMWADDIR if it is in the environment
     env = M_getenv("DOOMWADDIR");
@@ -827,7 +831,7 @@ static void BuildIWADDirList(void)
 
     CheckSteamGUSPatches();
 
-#else
+#elif !defined(__amigaos__)
     AddXdgDirs();
 #ifndef __MACOSX__
     AddSteamDirs();

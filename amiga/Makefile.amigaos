@@ -1,0 +1,87 @@
+# Crispy Doom for AmigaOS 3.x / AmiCradle, 68040 + FPU, on OpenGPU's SDL 2.
+#
+#   make -f amiga/Makefile.amigaos STOVE=/path/to/os32-gcc16/prefix \
+#        NDK=/path/to/gfopensdk/OpenNDK/Include_H \
+#        SDL2KIT=/path/to/opengpu-sdk ZLIB=/path/to/zlib-1.3.1
+#
+# STOVE is GFOpenAmigaGCC 16.2.0-open4 or later. SDL2KIT is the OpenGPU
+# developer kit (include/SDL2, lib/libSDL2.a and lib/libSDL2_mixer.a, the
+# program's halves of LIBS:OpenGPU/SDL2.module and SDL2_mixer.module), the
+# same SDL 2 the Chocolate Doom port (DalsinAI/amigachocolatedoom) runs on.
+# A stove that carries the kit can leave SDL2KIT pointing at its own
+# m68k-amigaos. ZLIB's inflate is built in for compressed ZDBSP nodes.
+# Output: build/amigaos/CrispyDoom/ with the program, its ReadMe, the GPL
+# and the icons. No IWAD is built in or packaged: see amiga/IWAD-ReadMe.
+
+STOVE   ?= $(HOME)/AmiCradle/stoves/os32-gcc16/prefix
+NDK     ?= $(HOME)/AmiCradle/gfopensdk/OpenNDK/Include_H
+SDL2KIT ?= ../../deps/opengpu-sdk
+ZLIB    ?= ../zlib-1.3.1
+CC      = $(STOVE)/bin/m68k-amigaos-gcc
+CPU     ?= -m68040 -m68881
+# -fno-tree-loop-distribute-patterns: GCC 16's loop miscompile (the kit's
+# sdl2-config gives it for GCC 16 too).
+OPT     ?= -O2 -fomit-frame-pointer -fno-tree-loop-distribute-patterns
+DEFS    = -D_DEFAULT_SOURCE -DDISABLE_SDL2NET
+INC     = -Iamiga -Isrc -Isrc/doom -Itextscreen -Iopl -Ipcsound \
+          -I$(SDL2KIT)/include/SDL2 -I$(NDK) -I$(ZLIB)
+# -Wno-char-subscripts: upstream passes plain (signed) char to <ctype.h>'s
+# macros in DEH, config and command-line parsing; libnix's newlib-style
+# macros warn about that on purpose. Harmless for the ASCII text these read
+# (a byte over 127 is only looked up, never written). Nothing else warns.
+CFLAGS  = -noixemul -std=gnu99 $(OPT) $(CPU) -Wall -Wno-char-subscripts $(DEFS) $(INC)
+ZFLAGS  = -noixemul -O2 $(CPU) -I$(ZLIB) -include unistd.h
+LDFLAGS = -noixemul $(CPU)
+LIBS    = -L$(SDL2KIT)/lib -lSDL2_mixer -lSDL2 -lm
+BUILD   = build/amigaos
+OBJDIR  = $(BUILD)/obj
+OUT     = $(BUILD)/CrispyDoom
+PROG    = crispy-doom
+
+# As src/CMakeLists.txt builds crispy-doom: every common file but the
+# dedicated server's main and the native zone allocator, Doom's own, and
+# the textscreen, OPL and PC speaker libraries.
+SRC_COMMON = $(filter-out src/d_dedicated.c src/z_native.c,$(wildcard src/*.c))
+SRC_DOOM   = $(filter-out src/doom/doom_icon.c,$(wildcard src/doom/*.c))
+SRC_LIBS   = $(wildcard textscreen/*.c) $(wildcard opl/*.c) $(wildcard pcsound/*.c)
+SRC        = $(SRC_COMMON) $(SRC_DOOM) $(SRC_LIBS)
+OBJS       = $(SRC:%.c=$(OBJDIR)/%.o)
+ZSRC       = adler32 crc32 inffast inflate inftrees zutil
+ZOBJS      = $(ZSRC:%=$(OBJDIR)/zlib/%.o)
+
+ICONS   = amiga/icons/CrispyDoom.info amiga/icons/$(PROG).info \
+          amiga/icons/ReadMe.info amiga/icons/COPYING.txt.info \
+          amiga/icons/IWAD-ReadMe.info
+
+all: $(OUT)/$(PROG)
+
+$(OUT)/$(PROG): $(OBJS) $(ZOBJS) $(ICONS) AMIGA_PORT.md amiga/IWAD-ReadMe | $(OUT)
+	$(CC) $(LDFLAGS) -o $@ $(OBJS) $(ZOBJS) $(LIBS)
+	cp AMIGA_PORT.md $(OUT)/ReadMe
+	cp COPYING.md $(OUT)/COPYING.txt
+	cp amiga/IWAD-ReadMe $(OUT)/IWAD-ReadMe
+	cp amiga/icons/$(PROG).info amiga/icons/ReadMe.info \
+	   amiga/icons/COPYING.txt.info amiga/icons/IWAD-ReadMe.info $(OUT)/
+	cp amiga/icons/CrispyDoom.info $(BUILD)/CrispyDoom.info
+
+# d_main.c takes in doom_icon.c (the window icon, made from data/doom.png).
+$(OBJDIR)/src/doom/d_main.o: src/doom/doom_icon.c
+
+$(OBJDIR)/%.o: %.c amiga/config.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+$(OBJDIR)/zlib/%.o: $(ZLIB)/%.c
+	@mkdir -p $(dir $@)
+	$(CC) $(ZFLAGS) -c -o $@ $<
+
+# The objects alone, without linking or packaging.
+objs: $(OBJS) $(ZOBJS)
+
+$(OUT):
+	mkdir -p $@
+
+clean:
+	rm -rf $(BUILD)
+
+.PHONY: all objs clean
