@@ -1,0 +1,81 @@
+{
+  "drawer": "CrispyDoom",
+  "drawer_icon": "amiga/icons/CrispyDoom.info",
+  "archive": "crispydoom-{version}-68040",
+  "members": [
+    {
+      "name": "crispy-doom",
+      "build": "crispy-doom",
+      "check": "executable_sha256"
+    },
+    {
+      "name": "crispy-doom.info",
+      "repo": "amiga/icons/crispy-doom.info"
+    },
+    {
+      "name": "ReadMe",
+      "repo": "AMIGA_PORT.md"
+    },
+    {
+      "name": "ReadMe.info",
+      "repo": "amiga/icons/ReadMe.info"
+    },
+    {
+      "name": "IWAD-ReadMe",
+      "repo": "amiga/IWAD-ReadMe"
+    },
+    {
+      "name": "IWAD-ReadMe.info",
+      "repo": "amiga/icons/IWAD-ReadMe.info"
+    },
+    {
+      "name": "COPYING.txt",
+      "repo": "COPYING.md"
+    },
+    {
+      "name": "COPYING.txt.info",
+      "repo": "amiga/icons/COPYING.txt.info"
+    }
+  ],
+  "aminet": [
+    [
+      "Short",
+      "Crispy Doom 7.2, a Doom source port, 68040+FPU"
+    ],
+    [
+      "Author",
+      "id Software (Doom); Fabian Greffrath and others (Crispy Doom); Amiga port: AmiCradle Team"
+    ],
+    [
+      "Uploader",
+      "AmiCradle Team"
+    ],
+    [
+      "Type",
+      "game/shoot"
+    ],
+    [
+      "Version",
+      "{version}"
+    ],
+    [
+      "Requires",
+      "AmigaOS 3.2, 68040/68060 with FPU, RTG, GFOpenGPU (SDL2.module, SDL2_mixer.module), a Doom IWAD"
+    ],
+    [
+      "Architecture",
+      "m68k-amigaos >= 3.0"
+    ]
+  ],
+  "root": [
+    {
+      "name": "Install-CrispyDoom",
+      "repo": "package/installer/Install-CrispyDoom",
+      "installer": true
+    },
+    {
+      "name": "Install-CrispyDoom.info",
+      "repo": "package/installer/Install-CrispyDoom.info"
+    }
+  ]
+}

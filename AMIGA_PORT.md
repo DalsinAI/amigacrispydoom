@@ -19,6 +19,18 @@ What you need
 - A Doom IWAD: none comes with the game. See IWAD-ReadMe in the drawer.
 
 
+Installing
+----------
+
+Unpack the archive anywhere (on AmiCradle: SYS:Utilities/OpenCompress x
+crispydoom-...lha RAM:), then double-click Install-CrispyDoom beside the
+CrispyDoom drawer: it checks for a 68040 with FPU and for SDL2.module and
+SDL2_mixer.module (in LIBS:GFOpenGPU/, or copied there from
+LIBS:OpenGPU/), asks where to put the game (Work:Games by default) and
+updates an earlier install in place: IWADs put in the drawer and the User
+drawer are left as they are.
+
+
 Using it
 --------
 
