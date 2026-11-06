@@ -1,0 +1,13 @@
+{
+  "name": "Crispy Doom",
+  "version": "7.2-amiga1",
+  "drawer": "CrispyDoom",
+  "program": "crispy-doom",
+  "cpu": "68040",
+  "fpu": true,
+  "space": 4000000,
+  "modules": ["SDL2.module", "SDL2_mixer.module"],
+  "keep": ["User"],
+  "parent": "Work:Games",
+  "badge": "../amiga/icons/art/crispy-doom.png"
+}
