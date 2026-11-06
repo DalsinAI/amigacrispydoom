@@ -49,6 +49,41 @@
 #include "w_wad.h"
 #include "z_zone.h"
 
+#ifdef __amigaos__
+#include <exec/types.h>
+#include <intuition/intuition.h>
+#include <workbench/startup.h>
+#include <proto/exec.h>
+#include <proto/intuition.h>
+
+// libnix's startup sets this when the program was started from Workbench.
+extern struct WBStartup *_WBenchMsg;
+
+// OpenGPU's SDL 2 has no message box, so a fatal error is shown with an
+// Intuition requester on the Workbench screen: started from Workbench, the
+// output window closes with the program and the message would be lost.
+static void I_AmigaErrorRequester(const char *msg)
+{
+    struct IntuitionBase *IntuitionBase;
+    struct EasyStruct es;
+    APTR args[1];
+
+    IntuitionBase = (struct IntuitionBase *) OpenLibrary((CONST_STRPTR) "intuition.library", 37);
+    if (IntuitionBase == NULL)
+    {
+        return;
+    }
+    es.es_StructSize = sizeof(es);
+    es.es_Flags = 0;
+    es.es_Title = (UBYTE *) PACKAGE_STRING;
+    es.es_TextFormat = (UBYTE *) "%s";
+    es.es_GadgetFormat = (UBYTE *) "OK";
+    args[0] = (APTR) msg;
+    EasyRequestArgs(NULL, &es, NULL, args);
+    CloseLibrary((struct Library *) IntuitionBase);
+}
+#endif
+
 #define DEFAULT_RAM 16*2 /* MiB [crispy] */
 #define MIN_RAM     4*4  /* MiB [crispy] */
 
@@ -341,6 +376,15 @@ void I_Error (const char *error, ...)
     // Pop up a GUI dialog box to show the error message, if the
     // game was not run from the console (and the user will
     // therefore be unable to otherwise see the message).
+#ifdef __amigaos__
+    // The game's screen goes first, so the requester is seen on Workbench.
+    SDL_Quit();
+
+    if (exit_gui_popup && (_WBenchMsg != NULL || !I_ConsoleStdout()))
+    {
+        I_AmigaErrorRequester(msgbuf);
+    }
+#else
     if (exit_gui_popup && !I_ConsoleStdout())
     {
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR,
@@ -350,6 +394,7 @@ void I_Error (const char *error, ...)
     // abort();
 
     SDL_Quit();
+#endif
 
     exit(-1);
 }
