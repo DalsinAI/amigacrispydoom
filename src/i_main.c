@@ -56,6 +56,9 @@ void D_DoomMain (void);
 // Crispy's larger limits (segs, visplanes, hires) want room to spare.
 unsigned long __stack = 524288;
 
+// For the Version command: the port's release (package/VERSION).
+static const char amiga_version[] __attribute__((used)) = "$VER: crispy-doom 7.2-amiga1 (07.11.2026)";
+
 // Started from its Workbench icon, the program's output goes to a console
 // window that opens only if something is printed, doesn't take the
 // keyboard from the game's screen and closes when the game ends.
