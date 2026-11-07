@@ -1705,7 +1705,14 @@ void D_DoomMain (void)
     if (iwadfile == NULL)
     {
         I_Error("Game mode indeterminate.  No IWAD file was found.  Try\n"
-                "specifying one with the '-iwad' command line parameter.\n");
+                "specifying one with the '-iwad' command line parameter.\n"
+#ifdef __amigaos__
+                "\n"
+                "Copy an IWAD (doom1.wad, doom.wad, doom2.wad, freedoom1.wad\n"
+                "...) into the CrispyDoom drawer, beside the crispy-doom\n"
+                "program. IWAD-ReadMe in the drawer has the details.\n"
+#endif
+                );
     }
 
     modifiedgame = false;
