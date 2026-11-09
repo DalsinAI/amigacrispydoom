@@ -8,7 +8,10 @@
     {
       "file": "crispy-doom.info",
       "kind": "tool",
-      "stack": 524288
+      "stack": 524288,
+      "toolTypes": [
+        "(FULLSCREEN)"
+      ]
     },
     {
       "file": "ReadMe.info",
