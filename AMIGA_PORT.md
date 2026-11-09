@@ -83,7 +83,8 @@ compressed ZDBSP nodes. Flags: -noixemul -m68040 -m68881 -O2 and GCC 16's
 -fno-tree-loop-distribute-patterns; the objects pass openrtg's
 fpcr_check.py.
 
-Icons: amiga/icons/icons.json, from Crispy's own data/doom.png:
+Icons: amiga/icons/icons.json, from our own GlowIcon art
+(amiga/icons/art/crispydoom.svg):
 
     python3 AMICRADLE/scripts/port_icons.py amiga/icons/icons.json --out amiga/icons
 
