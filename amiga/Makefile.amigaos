@@ -58,6 +58,7 @@ all: $(OUT)/$(PROG)
 $(OUT)/$(PROG): $(OBJS) $(ZOBJS) $(ICONS) AMIGA_PORT.md amiga/IWAD-ReadMe | $(OUT)
 	$(CC) $(LDFLAGS) -o $@ $(OBJS) $(ZOBJS) $(LIBS)
 	cp AMIGA_PORT.md $(OUT)/ReadMe
+	cp amiga/Controls $(OUT)/Controls
 	cp COPYING.md $(OUT)/COPYING.txt
 	cp amiga/IWAD-ReadMe $(OUT)/IWAD-ReadMe
 	cp amiga/icons/$(PROG).info amiga/icons/ReadMe.info \
