@@ -79,9 +79,10 @@ COPYING.txt and their icons) and build/amigaos/CrispyDoom.info.
 amiga/config.h replaces the config.h CMake would make: 8-bit paletted (no
 CRISPY_TRUECOLOR), SDL_net off (no network game), no FluidSynth,
 libsamplerate or libpng (screenshots are PCX), zlib's inflate built in for
-compressed ZDBSP nodes. Flags: -noixemul -m68040 -m68881 -O2 and GCC 16's
--fno-tree-loop-distribute-patterns; the objects pass openrtg's
-fpcr_check.py.
+compressed ZDBSP nodes. Flags: -noixemul -m68040 -msoft-float -O2 and GCC 16's
+-fno-tree-loop-distribute-patterns. One binary for every 68040 and 68060:
+the stove's fpuauto takes the FPU when there is one, and package/soft-float.sh
+stops the build on -m68881 or on an FPU instruction in the objects.
 
 Icons: amiga/icons/icons.json, from our own GlowIcon art
 (amiga/icons/art/crispydoom.svg):

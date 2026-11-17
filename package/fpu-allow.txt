@@ -1,0 +1,6 @@
+# C constant tables in .text that objdump decodes as code (OBJECT SYMBOL  # why)
+aes_prng.o _crypto_ft_tab  # AES forward table, const uint32_t
+tables.o _finesine  # Doom's fixed-point sine table, const fixed_t
+tables.o _finetangent  # Doom's fixed-point tangent table, const fixed_t
+tables.o _tantoangle  # Doom's tangent-to-angle table, const angle_t
+crc32.o _crc_braid_big_table  # zlib's CRC-32 braid table, const z_word_t

@@ -38,8 +38,13 @@ git init -q "$BUILD/zlib"
 git -C "$BUILD/zlib" fetch -q --depth 1 https://github.com/madler/zlib 51b7f2abdade71cd9bb0e7a373ef2610ec6f9daf	# v1.3.1
 git -C "$BUILD/zlib" checkout -q FETCH_HEAD
 
-make -f amiga/Makefile.amigaos STOVE="$STOVE" NDK="$NDK" SDL2KIT="$SDL2KIT" ZLIB="$BUILD/zlib" -j4 \
+make -f amiga/Makefile.amigaos STOVE="$STOVE" NDK="$NDK" SDL2KIT="$SDL2KIT" ZLIB="$BUILD/zlib" -j"${JOBS:-2}" \
 	> "$OUT/build-output.txt" 2>&1 || { tail -n 60 "$OUT/build-output.txt"; exit 1; }
+# One binary for every 68040 and 68060: -m68040 -msoft-float throughout, no
+# FPU instruction in the objects, the stove's fpuauto linked in.
+sh "$HERE/soft-float.sh" "$STOVE" build/amigaos/CrispyDoom/crispy-doom --log "$OUT/build-output.txt" \
+	--allow "$HERE/fpu-allow.txt" build/amigaos/obj > "$OUT/soft-float.txt" || { cat "$OUT/soft-float.txt"; exit 1; }
+cat "$OUT/soft-float.txt"
 cp build/amigaos/CrispyDoom/crispy-doom "$BUILD/crispy-doom"
 
 python3 - "$BUILD" "$STOVE/bin/m68k-amigaos-gcc" "crispy-doom" <<'PY'
