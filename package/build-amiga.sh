@@ -43,7 +43,7 @@ make -f amiga/Makefile.amigaos STOVE="$STOVE" NDK="$NDK" SDL2KIT="$SDL2KIT" ZLIB
 # One binary for every 68040 and 68060: -m68040 -msoft-float throughout, no
 # FPU instruction in the objects, the stove's fpuauto linked in.
 sh "$HERE/soft-float.sh" "$STOVE" build/amigaos/CrispyDoom/crispy-doom --log "$OUT/build-output.txt" \
-	build/amigaos/obj > "$OUT/soft-float.txt" || { cat "$OUT/soft-float.txt"; exit 1; }
+	--allow "$HERE/fpu-allow.txt" build/amigaos/obj > "$OUT/soft-float.txt" || { cat "$OUT/soft-float.txt"; exit 1; }
 cat "$OUT/soft-float.txt"
 cp build/amigaos/CrispyDoom/crispy-doom "$BUILD/crispy-doom"
 
