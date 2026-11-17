@@ -1,13 +1,48 @@
 {
   "name": "Crispy Doom",
-  "version": "7.2-amiga1",
+  "version": "7.2-amiga4-rc1",
   "drawer": "CrispyDoom",
   "program": "crispy-doom",
   "cpu": "68040",
   "fpu": true,
   "space": 4000000,
-  "modules": ["SDL2.module", "SDL2_mixer.module"],
-  "keep": ["User"],
+  "modules": [
+    "SDL2.module",
+    "SDL2_mixer.module"
+  ],
+  "keep": [
+    "User"
+  ],
   "parent": "Work:Games",
-  "badge": "../amiga/icons/art/crispy-doom.png"
+  "badge": "../amiga/icons/art/crispydoom.png",
+  "data": [
+    {
+      "what": "Freedoom, the free Doom data",
+      "files": [
+        "freedoom1.wad",
+        "freedoom2.wad"
+      ],
+      "optional": true,
+      "import": false,
+      "page": "https://freedoom.github.io",
+      "download": {
+        "url": "https://github.com/freedoom/freedoom/releases/download/v0.13.0/freedoom-0.13.0.zip",
+        "sha256": "3f9b264f3e3ce503b4fb7f6bdcb1f419d93c7b546f4df3e874dd878db9688f59",
+        "size": 24143781,
+        "root": "freedoom-0.13.0"
+      }
+    },
+    {
+      "what": "your own Doom IWAD",
+      "any": [
+        "doom1.wad",
+        "doom.wad",
+        "doom2.wad",
+        "tnt.wad",
+        "plutonia.wad"
+      ],
+      "import": true,
+      "optional": true
+    }
+  ]
 }

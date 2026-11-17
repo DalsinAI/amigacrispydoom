@@ -18,7 +18,7 @@ NDK     ?= $(HOME)/AmiCradle/gfopensdk/OpenNDK/Include_H
 SDL2KIT ?= ../../deps/opengpu-sdk
 ZLIB    ?= ../zlib-1.3.1
 CC      = $(STOVE)/bin/m68k-amigaos-gcc
-CPU     ?= -m68040 -m68881
+CPU     ?= -m68040 -msoft-float
 # -fno-tree-loop-distribute-patterns: GCC 16's loop miscompile (the kit's
 # sdl2-config gives it for GCC 16 too).
 OPT     ?= -O2 -fomit-frame-pointer -fno-tree-loop-distribute-patterns
